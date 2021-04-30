@@ -11,6 +11,10 @@ class TicTocToe
 
   bool is_running{true};
   bool is_player_1_turn{true};
+  // WON  := player 1 won
+  // LOSE := player 2 won
+  // RUN  := only exists because of check in is_finished
+  enum status { DRAW, WON, LOSE, RUN };
 
 public:
   auto print()
@@ -82,27 +86,14 @@ public:
     for (auto const &row : field) {
       if (std::all_of(row.begin(), row.end(),
                       [](auto const el) { return el == 'X'; })) {
-        return 1;
+        return status::WON;
       }
 
       if (std::all_of(row.begin(), row.end(),
                       [](auto const el) { return el == 'O'; })) {
-        return 2;
+        return status::LOSE;
       }
     }
-
-    // // horizontal check
-    // for (int row = 0; row < field.size(); row++) {
-    //   std::array<char, 3> curr_row = {field[row][0], field[row][1],
-    //                                   field[row][2]};
-    //   if (std::all_of(curr_row.begin(), curr_row.end(),
-    //                   [](auto const el) { return el == 'X'; })) {
-    //     return 1;
-    //   } else if (std::all_of(curr_row.begin(), curr_row.end(),
-    //                          [](auto const el) { return el == 'O'; })) {
-    //     return 2;
-    //   }
-    // }
 
     // vertical check
     for (auto col{0U}; col < field.size(); col++) {
@@ -110,11 +101,11 @@ public:
                                       field[2][col]};
       if (std::all_of(curr_col.begin(), curr_col.end(),
                       [](auto const el) { return el == 'X'; })) {
-        return 1;
+        return status::WON;
       }
       if (std::all_of(curr_col.begin(), curr_col.end(),
                       [](auto const el) { return el == 'O'; })) {
-        return 2;
+        return status::LOSE;
       }
     }
 
@@ -122,28 +113,27 @@ public:
     std::array<char, 3> diagonal = {field[0][0], field[1][1], field[2][2]};
     if (std::all_of(diagonal.begin(), diagonal.end(),
                     [](auto const el) { return el == 'X'; })) {
-      return 1;
+      return status::WON;
     }
     if (std::all_of(diagonal.begin(), diagonal.end(),
                     [](auto const el) { return el == 'O'; })) {
-      return 2;
+      return status::LOSE;
     }
     diagonal = {field[2][0], field[1][1], field[0][2]};
     if (std::all_of(diagonal.begin(), diagonal.end(),
                     [](auto const el) { return el == 'X'; })) {
-      return 1;
+      return status::WON;
     }
     if (std::all_of(diagonal.begin(), diagonal.end(),
                     [](auto const el) { return el == 'O'; })) {
-      return 2;
+      return status::LOSE;
     }
 
     if (is_dash == false) {
-      return 0;
+      return status::DRAW;
     }
 
-    return 3;
-    // return is_dash ? 0 : 2;
+    return status::RUN;
   }
 
   auto doMove()
@@ -165,6 +155,22 @@ public:
       doMove();
       auto res = is_finished();
       print();
+      switch (res) {
+      case static_cast<int>(status::DRAW):
+        std::cout << "Draw\n";
+        is_running = false;
+        break;
+      case status::WON:
+        std::cout << "Player 1 won!\n";
+        is_running = false;
+        break;
+      case 2:
+        std::cout << "Player 2 won!\n";
+        is_running = false;
+      default:
+        break;
+      }
+
       if (res == 1) {
         std::cout << "Player 1 won!\n";
         is_running = false;
