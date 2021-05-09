@@ -70,9 +70,9 @@ public:
     return field[pos.first][pos.second] != '-';
   }
 
-  // 0 noone won
-  // 1 player 1 won
-  // 2 player 2 won
+  // 0 := noone won
+  // 1 := player 1 won
+  // 2 := player 2 won
   auto is_finished()
   {
     bool is_dash = false;
